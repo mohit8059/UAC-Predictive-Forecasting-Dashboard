@@ -1,7 +1,37 @@
 🛡️ Predictive Forecasting of Care Load & Placement Demand
+🎯 About the Project
+The Unaccompanied Alien Children (UAC) Program operates in a high-uncertainty environment where sudden changes in border activity and humanitarian crises can rapidly increase federal care volumes.
 
-🎯About the ProjectThe Unaccompanied Alien Children (UAC) Program operates in a high-uncertainty environment where sudden changes in border activity and humanitarian crises can rapidly increase federal care volumes.Traditionally, HHS operations have been reactive—responding to overcrowding and capacity stress after it occurs. This project introduces a predictive forecasting intelligence system using machine learning to forecast daily care loads, monitor net inflow pressure, and provide early warnings to healthcare and child-welfare planners days in advance.
-🚀 Key FeaturesTime - Series Feature Engineering: 
-Built advanced predictive signals including lag values ($t-1$), 7-day rolling averages, and flow-based net pressure indicators (Transfers − Discharges).Machine Learning Forecasting: Implemented a Random Forest Regressor trained via strict time-based splits and walk-forward validation strategies.Interactive Streamlit Dashboard: An enterprise-grade web application featuring historical trend analysis, actual vs. predicted test-horizon evaluations, and dynamic capacity stress diagnostic alerts.High Accuracy: Achieved an exceptional Mean Absolute Error (MAE) of ~10.7 children against multi-thousand care loads.
-📊 Analytical Insights & FindingsPrecision Forecasting: 
-The model accurately tracks short-term intake and exit trends, minimizing error margins during critical surge periods.Proactive Lead Time: Provides stakeholders with a 7–14 day advance warning window to scale up shelter resources, medical staff, and caseworkers.Net Pressure Diagnostic: Dynamically evaluates whether incoming transfers outpace successful sponsor placements to flag upcoming overcrowding risks.🛠️ Tech StackLanguage: Python 3.xData Science / ML: Pandas, NumPy, Scikit-Learn (Random Forest)Data Visualization: Plotly, Matplotlib, SeabornWeb Framework: StreamlitEnvironment: Windows / PowerShell
+Traditionally, HHS operations have been reactive—responding to overcrowding and capacity stress after it occurs. This project introduces a predictive forecasting intelligence system using machine learning to forecast daily care loads, monitor net inflow pressure, and provide early warnings to healthcare and child-welfare planners days in advance.
+
+🚀 Key FeaturesTime-Series Feature Engineering: 
+Built advanced predictive signals including lag values ($t-1$), 7-day rolling averages, 
+and flow-based net pressure indicators (Transfers − Discharges).
+
+Machine Learning Forecasting: 
+Implemented a Random Forest Regressor trained via strict time-based splits and walk-forward validation strategies.
+
+Interactive Streamlit Dashboard: 
+An enterprise-grade web application featuring historical trend analysis, actual vs. predicted test-horizon evaluations, and dynamic capacity stress diagnostic alerts.
+
+High Accuracy: 
+Achieved an exceptional Mean Absolute Error (MAE) of ~10.7 children against multi-thousand care loads.
+
+📊 Analytical Insights & FindingsPrecision Forecasting:
+The model accurately tracks short-term intake and exit trends, 
+minimizing error margins during critical surge periods.
+
+Proactive Lead Time: 
+Provides stakeholders with a 7–14 day advance warning window 
+to scale up shelter resources, medical staff, and caseworkers.
+
+Net Pressure Diagnostic: 
+Dynamically evaluates whether incoming transfers outpace 
+successful sponsor placements to flag upcoming overcrowding risks.
+
+🛠️ Tech StackLanguage:
+Python 3.xData Science / ML:
+Pandas, NumPy, 
+Scikit-Learn (Random Forest)Data Visualization: Plotly,
+Matplotlib, SeabornWeb Framework:
+StreamlitEnvironment: Windows / PowerShell

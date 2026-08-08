@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
-import plotly.express as px
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 import os
 
 st.set_page_config(layout="wide", page_title="UAC Predictive Intelligence", page_icon="🛡️")
@@ -14,9 +13,10 @@ st.markdown("---")
 file_path = "HHS_Unaccompanied_Alien_Children_Program.csv"
 
 if not os.path.exists(file_path):
-    st.error(f"❌ Error: '{file_path}' file nahi mili!")
+    st.error(f"❌ Error: '{file_path}' file nahi mili! Kripya ise GitHub repo mein upload karein.")
     st.stop()
 
+# Data Load & Model Training
 @st.cache_data
 def load_and_train_model():
     df = pd.read_csv(file_path)
@@ -45,49 +45,45 @@ def load_and_train_model():
 
 df_final, test, model, features = load_and_train_model()
 
-# --- SIDEBAR CONTROLS ---
-st.sidebar.header("⚙️ Dashboard Controls")
-forecast_days = st.sidebar.slider("Select Horizon Evaluation (Days)", min_value=10, max_value=60, value=30)
-selected_model = st.sidebar.selectbox("Select Forecasting Engine", ["Random Forest (Default)", "SARIMA (Statistical)", "Gradient Boosting"])
-
-st.sidebar.markdown("---")
-st.sidebar.info("💡 **System Status:** Live model inference running on normalized time-series features.")
-
 # --- TOP METRICS (KPIs) ---
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Total Records Analyzed", f"{len(df_final):,}")
 col2.metric("Latest Care Load", f"{int(df_final['Children in HHS Care'].iloc[-1]):,}")
-col3.metric("Model Accuracy (MAE)", "10.72 Children", delta="-0.4% vs Baseline", delta_color="inverse")
-col4.metric("Surge Lead Time", "7-14 Days", "Proactive Alert")
+col3.metric("Model Accuracy (MAE)", "10.72 Children")
+col4.metric("Surge Lead Time", "7-14 Days")
 
 st.markdown("---")
 
-# --- INTERACTIVE PLOTS (PLOTLY) ---
+# --- CHARTS (Using Matplotlib for 100% stable rendering on Streamlit Cloud) ---
 c1, c2 = st.columns(2)
 
-test_subset = test.tail(forecast_days)
-predictions = model.predict(test_subset[features])
-
 with c1:
-    st.subheader("📈 Historical Trend Analysis")
-    fig_hist = px.line(df_final, x='Date', y='Children in HHS Care', 
-                       title="Long-term HHS Care Load History",
-                       color_discrete_sequence=['#1f77b4'])
-    fig_hist.update_layout(template="plotly_dark", margin=dict(l=20, r=20, t=40, b=20))
-    st.plotly_chart(fig_hist, use_container_width=True)
+    st.subheader("📈 Historical Trend of Children in HHS Care")
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.plot(df_final['Date'], df_final['Children in HHS Care'], color='#1f77b4', linewidth=2)
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Care Load")
+    ax.grid(True, linestyle='--', alpha=0.5)
+    st.pyplot(fig)
 
 with c2:
-    st.subheader("🔮 Actual vs Predicted Forecast Horizon")
-    fig_pred = go.Figure()
-    fig_pred.add_trace(go.Scatter(x=test_subset['Date'], y=test_subset['Children in HHS Care'], mode='lines', name='Actual Load', line=dict(color='#00cc96', width=2)))
-    fig_pred.add_trace(go.Scatter(x=test_subset['Date'], y=predictions, mode='lines', name='Predicted Load', line=dict(color='#ffa15a', width=2, dash='dash')))
-    fig_pred.update_layout(title=f"Performance Evaluation (Last {forecast_days} Days)", template="plotly_dark", margin=dict(l=20, r=20, t=40, b=20))
-    st.plotly_chart(fig_pred, use_container_width=True)
+    st.subheader("🔮 Actual vs Predicted (Test Horizon)")
+    predictions = model.predict(test[features])
+    fig2, ax2 = plt.subplots(figsize=(6, 4))
+    ax2.plot(test['Date'], test['Children in HHS Care'], label='Actual', color='#00cc96', linewidth=2)
+    ax2.plot(test['Date'], predictions, label='Predicted', color='#ffa15a', linestyle='--', linewidth=2)
+    ax2.set_xlabel("Date")
+    ax2.set_ylabel("Care Load")
+    ax2.legend()
+    ax2.grid(True, linestyle='--', alpha=0.5)
+    st.pyplot(fig2)
+
+st.markdown("---")
 
 # --- CAPACITY STRESS WARNING BOX ---
-st.markdown("### 🚨 Early-Warning & Capacity Stress Diagnostic")
+st.subheader("🚨 Early-Warning & Capacity Stress Diagnostic")
 net_trend = df_final['Net_Pressure'].iloc[-1]
 if net_trend > 0:
-    st.warning(f"⚠️ **High Inflow Warning:** Net pressure indicator is positive (+{net_trend}). Shelter intake is exceeding discharges. Proactive resource scaling recommended in R&D and regional shelters.")
+    st.warning(f"⚠️ **High Inflow Warning:** Net pressure indicator is positive (+{net_trend}). Shelter intake is exceeding discharges. Proactive resource scaling recommended.")
 else:
     st.success("✅ **Stable Capacity:** Current discharge capacity is sufficient to offset incoming transfers. System operating under normal parameters.")

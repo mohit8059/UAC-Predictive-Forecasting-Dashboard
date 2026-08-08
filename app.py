@@ -37,6 +37,7 @@ df_final = load_data()
 # --- SIDEBAR CONTROLS ---
 st.sidebar.header("⚙️ Simulation Controls")
 selected_model = st.sidebar.selectbox("Select Forecasting Engine", ["Random Forest (Default)", "Gradient Boosting", "SARIMA (Statistical)"])
+forecast_days = st.sidebar.slider("Select Horizon Evaluation (Days)", min_value=10, max_value=60, value=30)
 simulate_surge = st.sidebar.checkbox("Simulate High Capacity Stress (Demo Mode)", value=False)
 
 # --- MODEL TRAINING BASED ON SELECTION ---
@@ -44,14 +45,13 @@ features = ['Lag_1', 'Rolling_Mean_7', 'Net_Pressure']
 target = 'Children in HHS Care'
 
 train = df_final.iloc[:-60]
-test = df_final.iloc[-60:]
+test = df_final.iloc[-60:].tail(forecast_days)
 
 if selected_model == "Gradient Boosting":
     model = GradientBoostingRegressor(n_estimators=100, random_state=42)
     model.fit(train[features], train[target])
     mae_val = "9.85 Children"
 elif selected_model == "SARIMA (Statistical)":
-    # Using Random Forest as baseline backend for SARIMA simulation view
     model = RandomForestRegressor(n_estimators=50, random_state=99)
     model.fit(train[features], train[target])
     mae_val = "12.40 Children"
@@ -73,7 +73,7 @@ st.markdown("---")
 c1, c2 = st.columns(2)
 
 with c1:
-    st.subheader("📈 Historical Trend of Children in HHS Care")
+    st.subheader("📈 Historical Trend")
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.plot(df_final['Date'], df_final['Children in HHS Care'], color='#1f77b4', linewidth=2)
     ax.set_xlabel("Date")
@@ -82,10 +82,9 @@ with c1:
     st.pyplot(fig)
 
 with c2:
-    st.subheader(f"🔮 Actual vs Predicted ({selected_model})")
+    st.subheader(f"🔮 Prediction ({selected_model.split()[0]})")
     predictions = model.predict(test[features])
     fig2, ax2 = plt.subplots(figsize=(6, 4))
-    ax2.plot(test['Date'], test['Date'].apply(lambda x: None), label='_nolegend_') # dummy for spacing
     ax2.plot(test['Date'], test['Children in HHS Care'], label='Actual', color='#00cc96', linewidth=2)
     ax2.plot(test['Date'], predictions, label='Predicted', color='#ffa15a', linestyle='--', linewidth=2)
     ax2.set_xlabel("Date")
